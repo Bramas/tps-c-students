@@ -27,5 +27,5 @@ $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 
 .PHONY: clean
 clean:
-	rm -rf src/*.o
-	rm -f build/students
+	rm -rf obj/*.o
+	rm -f bin/students
