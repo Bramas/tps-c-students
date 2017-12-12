@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 struct st_db {
     char *filepath;
@@ -73,46 +74,100 @@ bool st_db_init_db_file(st_db_t *db)
     return true;
 }
 
-
-bool st_db_load(st_db_t *db)
+void st_str_trim(char * str)
 {
-    FILE *in = fopen(db->filepath, "r");
-    if(in == NULL)
+    int n = strlen(str);
+    n--;
+    while(n >= 0 && isspace(str[n]))
+    {
+        str[n] = '\0';
+        n--;
+    }
+}
+
+bool st_db_read_string_attribute(char * str, FILE *in)
+{
+    if(NULL == fgets(
+            str,
+            MAX_STUDENT_STRLEN,
+            in
+        ))
+    {
+        st_db_last_error = ERROR_EOF;
+        return false;
+    }
+    st_str_trim(str);
+    return true;
+}
+bool st_db_read_id_attribute(unsigned int * value, FILE *in)
+{
+    if(0 >= fscanf(in, "%u\n", value))
+    {
+        st_db_last_error = ERROR_EOF;
+        return false;
+    }
+    return true;
+}
+bool st_db_read_birth_year_attribute(unsigned short * value, FILE *in)
+{
+    if(0 >= fscanf(in, "%hu\n", value))
+    {
+        st_db_last_error = ERROR_EOF;
+        return false;
+    }
+    return true;
+}
+bool st_db_read_student(st_student_t * student, FILE *in)
+{
+    return
+        st_db_read_string_attribute(student->first_name, in)
+     && st_db_read_string_attribute(student->last_name, in)
+     && st_db_read_id_attribute(&(student->id), in)
+     && st_db_read_birth_year_attribute(&(student->birth_year), in);
+}
+bool st_db_open_db_file(st_db_t *db, const char * mode, FILE **in)
+{
+    *in = fopen(db->filepath, mode);
+    if(*in == NULL)
     {
         st_db_last_error = ERROR_CANNOT_OPEN_DB_FILE;
         return false;
     }
+    return true;
+}
+bool st_db_read_size(st_db_t *db, FILE *in)
+{
+    if(0 >= fscanf(in, "%zi\n", &(db->size)))
+        return false;
+    return true;
+}
 
-    fscanf(in, "%zi", &(db->size));
-    printf("Taille: %zi\n", db->size);
+bool st_db_load(st_db_t *db)
+{
+    FILE *in;
 
-    if(!st_db_alloc_students(db))
+    if(!st_db_open_db_file(db, "r", &in))
+        return false;
+
+    if( ! (
+           st_db_read_size(db, in)
+        && st_db_alloc_students(db)
+    ))
     {
         fclose(in);
         return false;
     }
 
+
     for(int i = 0; i < db->size; i++)
     {
-        fgets(
-            db->students[i].first_name,
-            MAX_STUDENT_STRLEN,
-            in
-        );
-        fgets(
-            db->students[i].last_name,
-            MAX_STUDENT_STRLEN,
-            in
-        );
-
-        fscanf(in, "%u", &(db->students[i].id));
-        fscanf(in, "%hu", &(db->students[i].birth_year));
-        printf("%s %s %u %hu\n",
-            db->students[i].first_name,
-            db->students[i].last_name,
-            db->students[i].id,
-            db->students[i].birth_year
-        );
+        if(!st_db_read_student(&(db->students[i]), in))
+        {
+            free(db->students);
+            db->size = 0;
+            fclose(in);
+            return false;
+        }
     }
     return true;
 }
@@ -126,4 +181,15 @@ bool st_db_alloc_students(st_db_t *db)
         return false;
     }
     return true;
+}
+
+
+size_t st_db_size(st_db_t *db)
+{
+    return db->size;
+}
+
+st_student_t st_db_get(st_db_t *db, int i)
+{
+    return db->students[i];
 }

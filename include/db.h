@@ -4,12 +4,14 @@
 
 #include "types.h"
 
+#include <stdio.h>
 #include <stdbool.h>
 
 #define ERROR_MALLOC "Memory allocation error"
 #define ERROR_CANNOT_OPEN_DB_FILE           \
     "Cannot open db file with write mode, " \
     "see errno for more information"
+#define ERROR_EOF "Unexpected end of file"
 
 
 
@@ -32,4 +34,13 @@ st_db_t * st_db_init(const char *filepath);
  */
 bool st_db_load(st_db_t *db);
 
+/**
+ * return the number of students
+ * in the database
+ */
+size_t st_db_size(st_db_t *db);
+/**
+ * return i-th student
+ */
+st_student_t st_db_get(st_db_t *db, int i);
 #endif
