@@ -12,7 +12,10 @@
     "Cannot open db file with write mode, " \
     "see errno for more information"
 #define ERROR_EOF "Unexpected end of file"
-
+#define ERROR_WRITING \
+           "Cannot write in the db file " \
+           "(see errno for more information)"
+#define ERROR_ID_NOT_FOUND "Id not found"
 
 
 /**
@@ -43,4 +46,16 @@ size_t st_db_size(st_db_t *db);
  * return i-th student
  */
 st_student_t st_db_get(st_db_t *db, int i);
+
+
+bool st_db_add(st_db_t *db, st_student_t student);
+
+
+bool st_db_save(st_db_t *db);
+
+bool st_db_remove_by_id(st_db_t *db, unsigned int id);
+
+void st_db_remove(st_db_t *db, int to_be_deleted);
+
+void st_db_free(st_db_t *db);
 #endif
