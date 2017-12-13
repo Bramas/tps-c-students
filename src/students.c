@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <ctype.h>
 #include <errno.h>
 #include "commands.h"
 #include "db.h"
 #include "types.h"
+#include "cmd_args.h"
 
 
 #define COMMAND_ADD "add"
@@ -19,52 +17,18 @@ void printUsage(void);
 
 int main(int argc, char ** argv)
 {
-    if(argc < 2)
+    st_cmd_args_t arguments = st_cmd_args_parse(argc,argv);
+    if(arguments.error)
     {
+        fprintf(stderr, "%s\n", arguments.str_error);
         printUsage();
         return 1;
     }
 
-    char * command = argv[1];
-    printf("Command %s\n", command);
+    printf("Command %s\n", arguments.command);
 
 
-    char *db_file = "students.txt";
-    st_student_t arg_student = {};
-
-    char c;
-    while ((c = getopt (argc, argv, "d:f:l:i:b:")) != -1)
-        switch (c)
-        {
-            case 'd':
-                db_file = optarg;
-                break;
-            case 'f':
-                strncpy(arg_student.first_name, optarg, MAX_STUDENT_STRLEN);
-                break;
-            case 'l':
-                strncpy(arg_student.last_name, optarg, MAX_STUDENT_STRLEN);
-                break;
-            case 'i':
-                arg_student.id = atoi(optarg);
-                break;
-            case 'b':
-                arg_student.birth_year = atoi(optarg);
-                break;
-            case '?':
-                if (optopt == 'c')
-                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-                else if (isprint (optopt))
-                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-                else
-                    fprintf (stderr,
-                       "Unknown option character `\\x%x'.\n",
-                       optopt);
-                return 1;
-        }
-
-
-    st_db_t *db = st_db_init(db_file);
+    st_db_t *db = st_db_init(arguments.db_file);
     if(db == NULL)
     {
         printf("Error: %s\n", st_db_get_last_error());
@@ -72,17 +36,26 @@ int main(int argc, char ** argv)
         return 1;
     }
 
-    if(!strcmp(command, COMMAND_ADD))
+    if(!strcmp(arguments.command, COMMAND_ADD))
     {
-        st_command_add(db, arg_student);
+        st_command_add(db, arguments.student);
     }
-    else if(!strcmp(command, COMMAND_LIST))
+    else if(!strcmp(arguments.command, COMMAND_LIST))
     {
         st_command_list(db);
     }
-    else if(!strcmp(command, COMMAND_REMOVE))
+    else if(!strcmp(arguments.command, COMMAND_REMOVE))
     {
-        st_command_remove(db, arg_student.id);
+        st_command_remove(db, arguments.student.id);
+    }
+
+    else if(!strcmp(arguments.command, COMMAND_SEARCH))
+    {
+        st_command_search(
+            db,
+            arguments.student,
+            arguments.search_and_flag
+            );
     }
     else
     {
