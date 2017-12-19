@@ -36,6 +36,8 @@ int main(int argc, char ** argv)
         return 1;
     }
 
+    //TODO: Utilisation des énum
+
     if(!strcmp(arguments.command, COMMAND_ADD))
     {
         st_command_add(db, arguments.student);

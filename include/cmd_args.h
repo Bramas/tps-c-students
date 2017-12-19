@@ -21,6 +21,13 @@ struct st_cmd_args
 typedef struct st_cmd_args st_cmd_args_t;
 
 
+/**
+ * Parse the command line arguments and returns all
+ * the useful values.
+ * If something is wrong, the returned structure
+ * will have a non-null 'error' attribut and the 'str_error'
+ * attribut will contain a description of the error
+ */
 st_cmd_args_t st_cmd_args_parse(int argc, char ** argv);
 
 
