@@ -101,8 +101,8 @@ bool st_student_match(
 void st_command_search(
     st_db_t *db,
     st_student_t arg_student,
-    bool and_flag,
-    int limit
+    bool and_flag
+    //, int limit
     )
 {
     if(!st_db_load(db))
