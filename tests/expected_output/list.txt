@@ -1,0 +1,16 @@
+Command list
+
+id:         263456
+first name: Bob
+last name:  Doe
+birth year: 1900
+
+id:         6452
+first name: Bob
+last name:  Doe
+birth year: 2000
+
+id:         15
+first name: John
+last name:  smith
+birth year: 1979
