@@ -11,23 +11,25 @@
 #define COMMANDS_H
 
 #include "types.h"
+#include "cmd_args.h"
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * Print the list of all the students
  * in the database
  */
-void st_command_list(st_db_t *db);
+void st_command_list(st_db_t *db, st_cmd_args_t args);
 
 /**
  * Add a single student to the database
  */
-void st_command_add(st_db_t *db, st_student_t student);
+void st_command_add(st_db_t *db, st_cmd_args_t args);
 
 /**
  * Remove a single student with the given id from the database
  */
-void st_command_remove(st_db_t *db, unsigned int id);
+void st_command_remove(st_db_t *db, st_cmd_args_t args);
 
 /**
  * print a student in the terminal
@@ -42,8 +44,7 @@ void st_student_print(st_student_t student);
  */
 void st_command_search(
     st_db_t *db,
-    st_student_t arg_student,
-    bool and_flag);
+    st_cmd_args_t arguments);
 
 #endif // COMMANDS_H
 

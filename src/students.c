@@ -21,7 +21,8 @@ int main(int argc, char ** argv)
         return 1;
     }
 
-    printf("Command %i\n", arguments.command);
+    printf("Command %s\n",
+        st_command_type_to_string(arguments.command));
 
 
     st_db_t *db = st_db_init(arguments.db_file);
@@ -36,20 +37,16 @@ int main(int argc, char ** argv)
     switch(arguments.command)
     {
         case COMMAND_ADD:
-            st_command_add(db, arguments.student);
+            st_command_add(db, arguments);
             break;
         case COMMAND_LIST:
-            st_command_list(db);
+            st_command_list(db, arguments);
             break;
         case COMMAND_REMOVE:
-            st_command_remove(db, arguments.student.id);
+            st_command_remove(db, arguments);
             break;
         case COMMAND_SEARCH:
-            st_command_search(
-                db,
-                arguments.student,
-                arguments.search_and_flag
-                );
+            st_command_search(db, arguments);
                 break;
         default:
             printf("Unknown command\n");

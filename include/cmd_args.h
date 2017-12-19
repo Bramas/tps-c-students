@@ -1,6 +1,7 @@
 #ifndef CMD_ARGS_H
 #define CMD_ARGS_H
 #include <stdbool.h>
+#include <stdlib.h>
 #include "types.h"
 
 #define COMMAND_ADD_STR "add"
@@ -20,6 +21,7 @@ struct st_cmd_args
     int               error;
     char              str_error[100];
     bool              search_and_flag;
+    size_t            print_limit;
 };
 
 typedef struct st_cmd_args st_cmd_args_t;
@@ -34,5 +36,9 @@ typedef struct st_cmd_args st_cmd_args_t;
  */
 st_cmd_args_t st_cmd_args_parse(int argc, char ** argv);
 
+/**
+ * Convert a command type to a printable string
+ */
+char *st_command_type_to_string(st_command_type_t type);
 
 #endif

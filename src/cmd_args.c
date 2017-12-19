@@ -5,10 +5,34 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
+
+char *st_command_type_to_string(st_command_type_t type)
+{
+    switch(type)
+    {
+        case COMMAND_ADD:
+            return COMMAND_ADD_STR;
+        case COMMAND_LIST:
+            return COMMAND_LIST_STR;
+        case COMMAND_REMOVE:
+            return COMMAND_REMOVE_STR;
+        case COMMAND_SEARCH:
+            return COMMAND_SEARCH_STR;
+        default:
+            return "Unknown command";
+    }
+}
 
 st_command_type_t st_parse_command_arg(char * command_str)
 {
+    int n = strlen(command_str);
+    for(int i = 0; i < n; i++)
+    {
+        command_str[i] = tolower(command_str[i]);
+    }
+
     if(!strcmp(command_str, COMMAND_ADD_STR))
     {
         return COMMAND_ADD;
@@ -41,9 +65,10 @@ st_cmd_args_t st_cmd_args_parse(int argc, char ** argv)
 
     args.command = st_parse_command_arg(argv[1]);
     args.db_file = "students.txt";
+    args.print_limit = SIZE_MAX;
 
     char c;
-    while ((c = getopt (argc, argv, "ad:f:l:i:b:")) != -1)
+    while ((c = getopt (argc, argv, "ad:f:l:i:b:n:")) != -1)
     {
         switch (c)
         {
@@ -70,6 +95,9 @@ st_cmd_args_t st_cmd_args_parse(int argc, char ** argv)
                 break;
             case 'b':
                 args.student.birth_year = atoi(optarg);
+                break;
+            case 'n':
+                args.print_limit = atoll(optarg);
                 break;
             case '?':
                 if (isprint (optopt))

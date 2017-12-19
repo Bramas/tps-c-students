@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-void st_command_list(st_db_t *db)
+void st_command_list(st_db_t *db, st_cmd_args_t args)
 {
     if(!st_db_load(db))
     {
@@ -15,13 +15,15 @@ void st_command_list(st_db_t *db)
         return;
     }
 
-    for(int i = 0; i < st_db_size(db); i++) {
+    for(size_t i = 0;
+        i < st_db_size(db) && i < args.print_limit;
+        i++) {
         st_student_t student = st_db_get(db,i);
         st_student_print(student);
     }
 }
 
-void st_command_add(st_db_t *db, st_student_t student)
+void st_command_add(st_db_t *db, st_cmd_args_t args)
 {
     if(!st_db_load(db))
     {
@@ -29,12 +31,13 @@ void st_command_add(st_db_t *db, st_student_t student)
         printf("errno %i: %s\n", errno, strerror(errno));
         return;
     }
-    if(!st_db_add(db, student))
+    if(!st_db_add(db, args.student))
     {
         printf("Error: %s\n", st_db_get_last_error());
         printf("errno %i: %s\n", errno, strerror(errno));
         return;
     }
+
     if(!st_db_save(db))
     {
         printf("Error: %s\n", st_db_get_last_error());
@@ -45,7 +48,7 @@ void st_command_add(st_db_t *db, st_student_t student)
 
 }
 
-void st_command_remove(st_db_t *db, unsigned int id)
+void st_command_remove(st_db_t *db, st_cmd_args_t args)
 {
     if(!st_db_load(db))
     {
@@ -53,7 +56,7 @@ void st_command_remove(st_db_t *db, unsigned int id)
         printf("errno %i: %s\n", errno, strerror(errno));
         return;
     }
-    if(!st_db_remove_by_id(db, id))
+    if(!st_db_remove_by_id(db, args.student.id))
     {
         printf("Error: %s\n", st_db_get_last_error());
         printf("errno %i: %s\n", errno, strerror(errno));
@@ -96,9 +99,7 @@ bool st_student_match(
 
 void st_command_search(
     st_db_t *db,
-    st_student_t arg_student,
-    bool and_flag
-    //, int limit
+    st_cmd_args_t args
     )
 {
     if(!st_db_load(db))
@@ -107,17 +108,22 @@ void st_command_search(
         printf("errno %i: %s\n", errno, strerror(errno));
         return;
     }
-    int limit = 5;
-    int found = 0;
-    for(int i = 0; i < st_db_size(db) && found < limit; i++) {
+    size_t found = 0;
+    for(size_t i = 0;
+        i < st_db_size(db) && found < args.print_limit;
+        i++) {
         st_student_t student = st_db_get(db,i);
-        if(st_student_match(arg_student, student, and_flag))
+        if(st_student_match(
+                args.student,
+                student,
+                args.search_and_flag
+            ))
         {
             st_student_print(student);
             found++;
         }
     }
-    if(found == 0)
+    if(found == 0 && args.print_limit != 0)
     {
         printf("No student found\n");
     }
