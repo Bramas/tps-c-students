@@ -6,6 +6,28 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+st_command_type_t st_parse_command_arg(char * command_str)
+{
+    if(!strcmp(command_str, COMMAND_ADD_STR))
+    {
+        return COMMAND_ADD;
+    }
+    if(!strcmp(command_str, COMMAND_LIST_STR))
+    {
+        return COMMAND_LIST;
+    }
+    if(!strcmp(command_str, COMMAND_REMOVE_STR))
+    {
+        return COMMAND_REMOVE;
+    }
+    if(!strcmp(command_str, COMMAND_SEARCH_STR))
+    {
+        return COMMAND_SEARCH;
+    }
+    return COMMAND_UNKNOWN;
+}
+
 st_cmd_args_t st_cmd_args_parse(int argc, char ** argv)
 {
     st_cmd_args_t args = {.error = 0};
@@ -17,7 +39,7 @@ st_cmd_args_t st_cmd_args_parse(int argc, char ** argv)
         return args;
     }
 
-    args.command = argv[1];
+    args.command = st_parse_command_arg(argv[1]);
     args.db_file = "students.txt";
 
     char c;

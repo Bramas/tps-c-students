@@ -22,4 +22,19 @@ struct st_student {
 };
 typedef struct st_student st_student_t;
 
+
+/**
+ * Types of acceptable command
+ */
+enum st_command_type {
+    COMMAND_UNKNOWN = 0,
+    COMMAND_ADD,
+    COMMAND_LIST,
+    COMMAND_REMOVE,
+    COMMAND_SEARCH
+};
+typedef enum st_command_type st_command_type_t;
+
+
+
 #endif // TYPES_H

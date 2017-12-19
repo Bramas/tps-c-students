@@ -29,6 +29,10 @@ void st_command_add(st_db_t *db, st_student_t student);
  */
 void st_command_remove(st_db_t *db, unsigned int id);
 
+/**
+ * print a student in the terminal
+ */
+void st_student_print(st_student_t student);
 
 /**
  * Search and prints all the students that have at least one value matching

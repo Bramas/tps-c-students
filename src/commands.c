@@ -17,11 +17,7 @@ void st_command_list(st_db_t *db)
 
     for(int i = 0; i < st_db_size(db); i++) {
         st_student_t student = st_db_get(db,i);
-       printf("%s %s %u %hu\n",
-        student.first_name,
-        student.last_name,
-        student.id,
-        student.birth_year);
+        st_student_print(student);
     }
 }
 
@@ -117,11 +113,7 @@ void st_command_search(
         st_student_t student = st_db_get(db,i);
         if(st_student_match(arg_student, student, and_flag))
         {
-            printf("%s %s %u %hu\n",
-                student.first_name,
-                student.last_name,
-                student.id,
-                student.birth_year);
+            st_student_print(student);
             found++;
         }
     }
@@ -129,4 +121,18 @@ void st_command_search(
     {
         printf("No student found\n");
     }
+}
+
+void st_student_print(st_student_t student)
+{
+    printf(
+        "\n"
+        "id:         %u\n"
+        "first name: %s\n"
+        "last name:  %s\n"
+        "birth year: %hu\n",
+        student.id,
+        student.first_name,
+        student.last_name,
+        student.birth_year);
 }
