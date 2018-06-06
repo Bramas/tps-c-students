@@ -67,7 +67,7 @@ size_t st_db_size(st_db_t *db);
 /**
  * return i-th student
  */
-st_student_t st_db_get(st_db_t *db, int i);
+st_student_t st_db_get(st_db_t *db, size_t i);
 
 /**
  * add a student to the database. The db_file is not update
@@ -88,7 +88,7 @@ bool st_db_remove_by_id(st_db_t *db, unsigned int id);
 /**
  * removes the student with index to_be_deleted from the database
  */
-void st_db_remove(st_db_t *db, int to_be_deleted);
+void st_db_remove(st_db_t *db, size_t to_be_deleted);
 
 /**
  * clear the database and free memory

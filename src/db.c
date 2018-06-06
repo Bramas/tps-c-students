@@ -77,11 +77,10 @@ bool st_db_init_db_file(st_db_t *db)
 
 void st_str_trim(char * str)
 {
-    int n = strlen(str);
-    n--;
-    while(n >= 0 && isspace(str[n]))
+    size_t n = strlen(str);
+    while(n > 0 && isspace(str[n-1]))
     {
-        str[n] = '\0';
+        str[n-1] = '\0';
         n--;
     }
 }
@@ -119,7 +118,7 @@ bool st_db_read_id_attribute(unsigned int * value, FILE *in)
 bool st_db_read_birth_year_attribute(unsigned short * value, FILE *in)
 {
     int tmp;
-    if(0 >= fscanf(in, "%i\n", &tmp))
+    if(0 >= fscanf(in, "%i", &tmp))
     {
         st_db_last_error = ERROR_EOF;
         return false;
@@ -129,6 +128,7 @@ bool st_db_read_birth_year_attribute(unsigned short * value, FILE *in)
         st_db_last_error = ERROR_EOF;
         return false;
     }
+    fgetc(in); // read and ignore end of line
     *value = tmp;
     return true;
 }
@@ -185,12 +185,13 @@ bool st_db_load(st_db_t *db)
     }
 
 
-    for(int i = 0; i < db->size; i++)
+    for(size_t i = 0; i < db->size; i++)
     {
         if(!st_db_read_student(&(db->students[i]), in))
         {
             free(db->students);
             db->size = 0;
+            db->max_size = 0;
             fclose(in);
             return false;
         }
@@ -216,7 +217,7 @@ size_t st_db_size(st_db_t *db)
     return db->size;
 }
 
-st_student_t st_db_get(st_db_t *db, int i)
+st_student_t st_db_get(st_db_t *db, size_t i)
 {
     return db->students[i];
 }
@@ -302,7 +303,7 @@ bool st_db_save(st_db_t *db)
     if(!st_db_write_size(db, out))
         return false;
 
-    for(int i = 0; i < db->size; i++)
+    for(size_t i = 0; i < db->size; i++)
     {
         if(!st_db_write_student(& db->students[i], out))
             return false;
@@ -311,9 +312,9 @@ bool st_db_save(st_db_t *db)
     return true;
 }
 
-void st_db_remove(st_db_t *db, int to_be_deleted)
+void st_db_remove(st_db_t *db, size_t to_be_deleted)
 {
-    for(int i = to_be_deleted; i < db->size - 1; i++)
+    for(size_t i = to_be_deleted; i < db->size - 1; i++)
     {
         db->students[i] = db->students[i+1];
     }
@@ -322,7 +323,7 @@ void st_db_remove(st_db_t *db, int to_be_deleted)
 
 bool st_db_remove_by_id(st_db_t *db, unsigned int id)
 {
-    for(int i = 0; i < db->size; i++)
+    for(size_t i = 0; i < db->size; i++)
     {
         if(db->students[i].id == id)
         {
