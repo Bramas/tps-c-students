@@ -1,5 +1,5 @@
 CC ?= clang
-CFLAGS ?= -Wall
+CFLAGS ?= -Wall -std=c11
 LDLIBS ?= -lm
 
 INCLUDE_PATH = ./include
